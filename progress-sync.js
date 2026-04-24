@@ -1,8 +1,7 @@
 // progress-sync.js — Sync localStorage progress to cloud when authenticated
 import { isLoggedIn, getToken } from './auth.js';
 
-// TODO: Replace with secplus API Gateway URL after Lambda is created
-const API_URL = 'https://PLACEHOLDER.execute-api.us-east-1.amazonaws.com/prod';
+const API_URL = 'https://pxz3iq3tk1.execute-api.us-east-1.amazonaws.com';
 
 const SYNC_KEYS = [
   'fc-progress-v1',
