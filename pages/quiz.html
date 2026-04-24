@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>(function(){if(localStorage.getItem('theme-v1')==='light')document.documentElement.classList.add('light-mode');})()</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- PWA -->
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sec+ Study" />
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+  <title>Free Security+ SY0-701 Practice Quiz — 1,500 Exam Questions | it-learn.io</title>
+  <link rel="canonical" href="https://secplus.it-learn.io/pages/quiz.html" />
+
+  <meta name="description" content="Practice for your CompTIA Security+ SY0-701 exam with 1,500 free questions. Filter by domain, choose timed or untimed mode, and review every missed answer." />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    /* ── Quiz page layout ── */
+    .qz-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .qz-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .qz-header h1 { font-size: 1.6rem; margin: 0; }
+
+    /* ── Screen management ── */
+    .qz-screen { display: none; flex-direction: column; gap: 1.5rem; }
+    .qz-screen.active { display: flex; }
+
+    /* ── Setup screen ── */
+    .qz-mode-tabs {
+      display: flex;
+      gap: .5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+    .qz-mode-tab {
+      padding: .6rem 1.2rem;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: background .15s, color .15s;
+    }
+    .qz-mode-tab.active {
+      background: var(--panel2);
+      color: var(--text);
+      border-color: var(--border);
+      border-bottom: 1px solid var(--panel2);
+      margin-bottom: -1px;
+    }
+
+    .qz-setup-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .qz-setup-panel.hidden { display: none; }
+
+    .qz-setup-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: center;
+    }
+    .qz-setup-row label { font-size: .85rem; color: var(--muted); min-width: 80px; }
+
+    /* ── Domain pills (multi-select) ── */
+    .qz-domain-pills { display: flex; flex-wrap: wrap; gap: .4rem; flex: 1; }
+    .qz-domain-pill {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .28rem .75rem; border: 1px solid var(--border);
+      border-radius: 99px; background: var(--panel2); color: var(--muted);
+      font-size: .8rem; cursor: pointer; user-select: none;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .qz-domain-pill:hover { border-color: #7c3aed; color: var(--text); }
+    .qz-domain-pill.selected {
+      border-color: #7c3aed; background: rgba(124,58,237,.15); color: var(--text);
+    }
+    .qz-domain-pill input[type="checkbox"] {
+      position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+    }
+
+    .qz-setup-row select {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .7rem;
+      font-size: .85rem;
+      cursor: pointer;
+      flex: 1;
+    }
+    .qz-setup-row select:focus { outline: 2px solid #7c3aed; }
+
+    .qz-exam-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: .75rem;
+    }
+    .qz-exam-stat {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .qz-exam-stat .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+    .qz-exam-stat .stat-lbl { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+    .qz-domain-weights {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+    .qz-weight-row { display: flex; align-items: center; gap: .75rem; font-size: .82rem; }
+    .qz-weight-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .qz-weight-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #7c3aed, #06b6d4); }
+    .qz-weight-pct { min-width: 32px; color: var(--muted); text-align: right; }
+
+    .btn-start {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: .65rem 1.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(124,58,237,.35);
+      transition: opacity .15s, box-shadow .15s;
+    }
+    .btn-start:hover { opacity: .9; box-shadow: 0 6px 20px rgba(124,58,237,.5); }
+
+    /* ── Active exam screen ── */
+    .qz-top-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .qz-q-counter { font-size: .9rem; color: var(--muted); min-width: 70px; }
+    .qz-progress-bar-wrap { flex: 1; min-width: 80px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .qz-progress-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #06b6d4); border-radius: 99px; transition: width .3s; width: 0%; }
+    .qz-timer {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text);
+      padding: .25rem .6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-width: 64px;
+      text-align: center;
+      display: none;
+    }
+    .qz-timer.warning { color: #e67e22; border-color: #e67e22; }
+    .qz-timer.danger { color: #e74c3c; border-color: #e74c3c; }
+    .qz-timer.show { display: inline-block; }
+
+    /* Question card */
+    .qz-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .qz-obj-tag {
+      font-size: .7rem;
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: .15rem .55rem;
+      align-self: flex-start;
+    }
+    .qz-question-text {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    /* Options */
+    .qz-options {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+    .qz-option {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--panel2);
+      transition: border-color .15s, background .15s;
+      user-select: none;
+    }
+    .qz-option:hover { border-color: #7c3aed; }
+    .qz-option.selected { border-color: #7c3aed; background: rgba(124,58,237,.12); }
+    .qz-option.correct { border-color: #2ecc71; background: rgba(46,204,113,.12); }
+    .qz-option.wrong { border-color: #e74c3c; background: rgba(231,76,60,.12); }
+    .qz-option.disabled { cursor: default; pointer-events: none; }
+
+    .qz-opt-letter {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .qz-option.selected .qz-opt-letter { background: #7c3aed; color: #fff; }
+    .qz-option.correct .qz-opt-letter { background: #2ecc71; color: #0a1f12; }
+    .qz-option.wrong .qz-opt-letter { background: #e74c3c; color: #fff; }
+
+    .qz-opt-text { font-size: .92rem; line-height: 1.5; color: var(--text); }
+
+    /* Explanation panel */
+    .qz-explanation {
+      display: none;
+      margin-top: .25rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255,255,255,.04);
+      border-left: 3px solid #7c3aed;
+      border-radius: 0 8px 8px 0;
+      font-size: .87rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .qz-explanation.show { display: block; }
+    .qz-explanation strong { color: var(--text); }
+
+    /* Bottom actions */
+    .qz-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .qz-card-actions button {
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.2rem;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .qz-card-actions button:hover { opacity: .85; }
+    .btn-submit {
+      background: #7c3aed;
+      color: #fff;
+    }
+    .btn-submit:disabled { opacity: .4; cursor: default; }
+    .btn-next-q {
+      background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+      color: #fff;
+      display: none;
+    }
+    .btn-next-q.show { display: inline-block; }
+    .qz-score-live {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* ── Results screen ── */
+    .qz-results-hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .75rem;
+    }
+    .qz-score-ring {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 5px solid var(--border);
+      position: relative;
+    }
+    .qz-score-ring.pass { border-color: #2ecc71; }
+    .qz-score-ring.fail { border-color: #e74c3c; }
+    .qz-score-pct { font-size: 2rem; font-weight: 800; }
+    .qz-pass-badge {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .3rem .8rem;
+      border-radius: 99px;
+    }
+    .qz-pass-badge.pass { background: rgba(46,204,113,.15); color: #2ecc71; border: 1px solid #2ecc71; }
+    .qz-pass-badge.fail { background: rgba(231,76,60,.15); color: #e74c3c; border: 1px solid #e74c3c; }
+
+    .qz-results-meta { font-size: .85rem; color: var(--muted); }
+
+    /* Domain breakdown */
+    .qz-domain-breakdown {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .qz-domain-breakdown h3 { font-size: 1rem; margin: 0 0 1rem; }
+    .qz-breakdown-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: .65rem;
+      font-size: .85rem;
+    }
+    .qz-breakdown-name { flex: 1; color: var(--text); }
+    .qz-breakdown-bar-wrap { width: 120px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .qz-breakdown-bar { height: 100%; border-radius: 99px; transition: width .4s; }
+    .qz-breakdown-frac { min-width: 42px; text-align: right; color: var(--muted); }
+
+    /* Missed questions review */
+    .qz-missed-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .qz-missed-section h3 { font-size: 1rem; margin: 0 0 1rem; }
+    .qz-missed-item {
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 0;
+    }
+    .qz-missed-item:last-child { border-bottom: none; }
+    .qz-missed-q { font-size: .88rem; color: var(--text); margin-bottom: .4rem; }
+    .qz-missed-your { font-size: .82rem; color: #e74c3c; }
+    .qz-missed-correct { font-size: .82rem; color: #2ecc71; margin-bottom: .35rem; }
+    .qz-missed-exp { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+    .qz-result-actions {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .btn-retry {
+      background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: .6rem 1.5rem;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-retry:hover { opacity: .85; }
+    .btn-back-setup {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .6rem 1.5rem;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-back-setup:hover { background: var(--border); }
+
+    @media (max-width: 600px) {
+      .qz-exam-info { grid-template-columns: 1fr 1fr; }
+      .qz-card { padding: 1.25rem; }
+    }
+  </style>
+  <!-- Open Graph / Social preview -->
+  <meta property="og:type"         content="website" />
+  <meta property="og:url"          content="https://secplus.it-learn.io/pages/quiz.html" />
+  <meta property="og:title"        content="Practice Quiz — Security+ SY0-701 | it-learn.io" />
+  <meta property="og:description"  content="Free CompTIA Security+ SY0-701 study tool — 1,500 practice questions, 1,500 flashcards, 5 domains, and full progress tracking." />
+  <meta property="og:image"        content="https://secplus.it-learn.io/social-preview.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"    content="Security+ SY0-701 Study | it-learn.io" />
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Practice Quiz — Security+ SY0-701 | it-learn.io" />
+  <meta name="twitter:description" content="Free CompTIA Security+ SY0-701 study tool — 1,500 practice questions, 1,500 flashcards, 5 domains, and full progress tracking." />
+  <meta name="twitter:image"       content="https://secplus.it-learn.io/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Preconnect hints -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://www.clarity.ms" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-G3BQF5RB65"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-G3BQF5RB65');
+  </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vvugnbm172");
+  </script>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Free Security+ SY0-701 Practice Quiz",
+  "url": "https://secplus.it-learn.io/pages/quiz.html",
+  "description": "1,500 free CompTIA Security+ SY0-701 practice questions organized by domain and objective.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://secplus.it-learn.io/"
+  },
+  "educationalUse": "practice",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "CompTIA Security+ exam candidates"
+  }
+}
+  </script>
+</head>
+<body>
+  <div class="layout">
+  <nav id="sidebar-nav" class="sidebar"></nav>
+
+  <main class="main-content">
+    <div class="qz-wrap">
+
+      <!-- Header -->
+      <div class="qz-header">
+        <h1>Practice Quiz</h1>
+      </div>
+
+      <!-- ── SETUP SCREEN ── -->
+      <div class="qz-screen active" id="qz-setup-screen">
+
+        <!-- Mode tabs -->
+        <div class="qz-mode-tabs">
+          <button class="qz-mode-tab active" id="tab-quiz">Quiz Mode</button>
+          <button class="qz-mode-tab" id="tab-exam">Practice Exam</button>
+        </div>
+
+        <!-- Quiz mode panel -->
+        <div class="qz-setup-panel" id="panel-quiz">
+          <p style="font-size:.9rem;color:var(--muted);margin:0;">
+            Answer questions by domain or objective with immediate feedback and explanations.
+          </p>
+          <div class="qz-setup-row">
+            <label>Domains</label>
+            <div class="qz-domain-pills" id="qz-domain-pills">
+              <!-- populated by buildDomainFilter() -->
+            </div>
+          </div>
+          <div class="qz-setup-row" id="qz-obj-row">
+            <label>Objective</label>
+            <select id="qz-obj-select">
+              <option value="all">All Objectives</option>
+            </select>
+          </div>
+          <div class="qz-setup-row">
+            <label>Questions</label>
+            <select id="qz-count-select">
+              <option value="10">10 questions</option>
+              <option value="20" selected>20 questions</option>
+              <option value="40">40 questions</option>
+              <option value="all">All available</option>
+            </select>
+          </div>
+          <div class="qz-setup-row">
+            <label>Order</label>
+            <select id="qz-order-select">
+              <option value="random">Random</option>
+              <option value="sequential">Sequential</option>
+            </select>
+          </div>
+          <button class="btn-start" id="btn-start-quiz">Start Quiz →</button>
+        </div>
+
+        <!-- Exam mode panel -->
+        <div class="qz-setup-panel hidden" id="panel-exam">
+          <p style="font-size:.9rem;color:var(--muted);margin:0;">
+            Simulate the real SY0-701 exam experience with weighted domains and a 90-minute timer.
+          </p>
+          <div class="qz-exam-info">
+            <div class="qz-exam-stat">
+              <div class="stat-val">90</div>
+              <div class="stat-lbl">Questions</div>
+            </div>
+            <div class="qz-exam-stat">
+              <div class="stat-val">90</div>
+              <div class="stat-lbl">Minutes</div>
+            </div>
+            <div class="qz-exam-stat">
+              <div class="stat-val">72%</div>
+              <div class="stat-lbl">Pass Score</div>
+            </div>
+            <div class="qz-exam-stat">
+              <div class="stat-val">No</div>
+              <div class="stat-lbl">Mid-Exam Feedback</div>
+            </div>
+          </div>
+          <div class="qz-domain-weights">
+            <div style="font-size:.82rem;color:var(--muted);margin-bottom:.25rem;">Domain Weighting</div>
+            <div class="qz-weight-row">
+              <span style="min-width:180px;color:var(--text);">1.0 – Networking Concepts</span>
+              <div class="qz-weight-bar-wrap"><div class="qz-weight-bar" style="width:23%"></div></div>
+              <span class="qz-weight-pct">23%</span>
+            </div>
+            <div class="qz-weight-row">
+              <span style="min-width:180px;color:var(--text);">2.0 – Network Implementation</span>
+              <div class="qz-weight-bar-wrap"><div class="qz-weight-bar" style="width:20%"></div></div>
+              <span class="qz-weight-pct">20%</span>
+            </div>
+            <div class="qz-weight-row">
+              <span style="min-width:180px;color:var(--text);">3.0 – Network Operations</span>
+              <div class="qz-weight-bar-wrap"><div class="qz-weight-bar" style="width:19%"></div></div>
+              <span class="qz-weight-pct">19%</span>
+            </div>
+            <div class="qz-weight-row">
+              <span style="min-width:180px;color:var(--text);">4.0 – Network Security</span>
+              <div class="qz-weight-bar-wrap"><div class="qz-weight-bar" style="width:14%"></div></div>
+              <span class="qz-weight-pct">14%</span>
+            </div>
+            <div class="qz-weight-row">
+              <span style="min-width:180px;color:var(--text);">5.0 – Network Troubleshooting</span>
+              <div class="qz-weight-bar-wrap"><div class="qz-weight-bar" style="width:24%"></div></div>
+              <span class="qz-weight-pct">24%</span>
+            </div>
+          </div>
+          <button class="btn-start" id="btn-start-exam">Start Practice Exam →</button>
+        </div>
+
+      </div>
+
+      <!-- ── ACTIVE QUESTION SCREEN ── -->
+      <div class="qz-screen" id="qz-active-screen">
+
+        <div class="qz-top-bar">
+          <span class="qz-q-counter" id="qz-counter">1 / 20</span>
+          <div class="qz-progress-bar-wrap">
+            <div class="qz-progress-fill" id="qz-progress-fill"></div>
+          </div>
+          <span class="qz-timer" id="qz-timer">90:00</span>
+        </div>
+
+        <div class="qz-card" id="qz-card">
+          <span class="qz-obj-tag" id="qz-obj-tag"></span>
+          <div class="qz-question-text" id="qz-question-text"></div>
+          <div class="qz-options" id="qz-options"></div>
+          <div class="qz-explanation" id="qz-explanation"></div>
+          <div class="qz-card-actions">
+            <span class="qz-score-live" id="qz-score-live"></span>
+            <div style="display:flex;gap:.6rem;align-items:center;">
+              <button class="btn-submit" id="btn-submit" disabled>Submit</button>
+              <button class="btn-next-q" id="btn-next-q">Next →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── RESULTS SCREEN ── -->
+      <div class="qz-screen" id="qz-results-screen">
+
+        <div class="qz-results-hero">
+          <div class="qz-score-ring" id="qz-score-ring">
+            <span class="qz-score-pct" id="qz-score-pct">—%</span>
+          </div>
+          <span class="qz-pass-badge" id="qz-pass-badge">—</span>
+          <div class="qz-results-meta" id="qz-results-meta"></div>
+        </div>
+
+        <div class="qz-domain-breakdown">
+          <h3>Domain Breakdown</h3>
+          <div id="qz-breakdown-rows"></div>
+        </div>
+
+        <div class="qz-missed-section" id="qz-missed-section">
+          <h3>Review Missed Questions</h3>
+          <div id="qz-missed-list"></div>
+        </div>
+
+        <div class="qz-result-actions">
+          <button class="btn-retry" id="btn-retry">Retry Same Settings</button>
+          <button class="btn-back-setup" id="btn-back-setup">← Change Settings</button>
+          <button class="btn-export-pdf" id="btn-export-pdf">📄 Export PDF</button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  </div><!-- /.layout -->
+  <script type="module" src="../app-quiz.js"></script>
+</body>
+</html>

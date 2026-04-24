@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>(function(){if(localStorage.getItem('theme-v1')==='light')document.documentElement.classList.add('light-mode');})()</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sec+ Study" />
+  <link rel="icon" href="../favicon.ico" />
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+  <title>Sign In — Security+ SY0-701 Study | it-learn.io</title>
+  <link rel="canonical" href="https://secplus.it-learn.io/pages/login.html" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Sign in or create a free account to access all Security+ SY0-701 study tools — flashcards, practice quiz, progress tracking, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07090f;
+      --panel:     #0e1018;
+      --panel2:    #161922;
+      --border:    rgba(255,255,255,.08);
+      --text:      #e8eaf0;
+      --muted:     rgba(255,255,255,.45);
+      --neon-green:  #00ff88;
+      --neon-purple: #b44fff;
+    }
+
+    body {
+      font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-brand h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      color: var(--neon-green);
+      letter-spacing: .05em;
+      text-shadow: 0 0 18px rgba(0,255,136,.4);
+      margin-bottom: .25rem;
+    }
+    .auth-brand p {
+      font-size: .9rem;
+      color: var(--muted);
+    }
+
+    .auth-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: .75rem;
+      text-align: center;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .auth-tab:hover { color: var(--text); }
+    .auth-tab.active {
+      color: var(--neon-green);
+      border-bottom-color: var(--neon-green);
+    }
+
+    /* Forms */
+    .auth-form { display: none; flex-direction: column; gap: 1rem; }
+    .auth-form.active { display: flex; }
+
+    .auth-field { display: flex; flex-direction: column; gap: .35rem; }
+    .auth-field label {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .auth-field input {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .7rem .9rem;
+      font-size: .95rem;
+      color: var(--text);
+      font-family: inherit;
+      transition: border-color .15s;
+    }
+    .auth-field input:focus {
+      outline: none;
+      border-color: var(--neon-green);
+      box-shadow: 0 0 0 2px rgba(0,255,136,.12);
+    }
+    .auth-field input::placeholder { color: rgba(255,255,255,.2); }
+
+    .auth-submit {
+      background: linear-gradient(135deg, #00cc6a 0%, #00ff88 100%);
+      color: #07090f;
+      border: none;
+      border-radius: 10px;
+      padding: .75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0,255,136,.25);
+      transition: opacity .15s;
+      margin-top: .5rem;
+      letter-spacing: .04em;
+    }
+    .auth-submit:hover { opacity: .9; }
+    .auth-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+    .auth-link {
+      font-size: .88rem;
+      color: var(--neon-green);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 0;
+      font-family: inherit;
+    }
+    .auth-link:hover { text-decoration: underline; }
+
+    .auth-alt {
+      text-align: center;
+      font-size: .88rem;
+      color: var(--muted);
+      margin-top: .5rem;
+    }
+
+    /* Message area */
+    .auth-msg {
+      padding: .7rem 1rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .auth-msg.show { display: block; }
+    .auth-msg.error {
+      background: rgba(231, 76, 60, .1);
+      border: 1px solid rgba(231, 76, 60, .3);
+      color: #e74c3c;
+    }
+    .auth-msg.success {
+      background: rgba(0,255,136,.1);
+      border: 1px solid rgba(0,255,136,.3);
+      color: var(--neon-green);
+    }
+
+    /* 6-digit code input */
+    .code-input-group {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+    }
+    .code-input-group input {
+      width: 44px;
+      height: 52px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Orbitron', monospace;
+    }
+    .code-input-group input:focus {
+      outline: none;
+      border-color: var(--neon-green);
+      box-shadow: 0 0 0 2px rgba(0,255,136,.12);
+    }
+
+    .auth-home-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: .88rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .auth-home-link:hover { color: var(--text); }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(7,9,15,.3);
+      border-top-color: #07090f;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: .4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Light mode */
+    .light-mode { --bg: #f0f2f5; --panel: #fff; --panel2: #f5f7fa; --border: rgba(0,0,0,.1); --text: #1a1d27; --muted: rgba(0,0,0,.45); }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-brand">
+      <h1>Security+ SY0-701</h1>
+      <p>Free Study Hub — it-learn.io</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-msg" id="auth-msg"></div>
+
+      <div class="auth-tabs" id="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab" data-tab="register">Create Account</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form class="auth-form active" id="form-login" autocomplete="on">
+        <div class="auth-field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div class="auth-field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Your password" required />
+        </div>
+        <button type="submit" class="auth-submit" id="btn-login">Sign In</button>
+        <div class="auth-alt">
+          <button type="button" class="auth-link" id="btn-forgot">Forgot password?</button>
+        </div>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form class="auth-form" id="form-register" autocomplete="on">
+        <div class="auth-field">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div class="auth-field">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" name="new-password" autocomplete="new-password" placeholder="Min 8 chars, upper + lower + number" required minlength="8" />
+        </div>
+        <div class="auth-field">
+          <label for="reg-password2">Confirm Password</label>
+          <input type="password" id="reg-password2" name="new-password" autocomplete="new-password" placeholder="Re-enter your password" required minlength="8" />
+        </div>
+        <button type="submit" class="auth-submit" id="btn-register">Create Free Account</button>
+      </form>
+
+      <!-- CONFIRM EMAIL FORM -->
+      <form class="auth-form" id="form-confirm">
+        <p style="font-size:.9rem;color:var(--muted);text-align:center;margin-bottom:.5rem;">
+          We sent a 6-digit code to your email. Enter it below to verify your account.
+        </p>
+        <div class="code-input-group" id="code-inputs">
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 1" />
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 2" />
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 3" />
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 4" />
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 5" />
+          <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 6" />
+        </div>
+        <button type="submit" class="auth-submit" id="btn-confirm">Verify Email</button>
+        <div class="auth-alt">
+          <button type="button" class="auth-link" id="btn-back-login">Back to Sign In</button>
+        </div>
+      </form>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <form class="auth-form" id="form-forgot">
+        <p style="font-size:.9rem;color:var(--muted);text-align:center;margin-bottom:.5rem;">
+          Enter your email and we'll send you a reset code.
+        </p>
+        <div class="auth-field">
+          <label for="forgot-email">Email</label>
+          <input type="email" id="forgot-email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <button type="submit" class="auth-submit" id="btn-send-code">Send Reset Code</button>
+        <div class="auth-alt">
+          <button type="button" class="auth-link" id="btn-back-login2">Back to Sign In</button>
+        </div>
+      </form>
+
+      <!-- RESET PASSWORD FORM -->
+      <form class="auth-form" id="form-reset">
+        <p style="font-size:.9rem;color:var(--muted);text-align:center;margin-bottom:.5rem;">
+          Enter the code from your email and set a new password.
+        </p>
+        <div class="auth-field">
+          <label for="reset-code">Reset Code</label>
+          <input type="text" id="reset-code" inputmode="numeric" placeholder="6-digit code" required />
+        </div>
+        <div class="auth-field">
+          <label for="reset-password">New Password</label>
+          <input type="password" id="reset-password" name="new-password" autocomplete="new-password" placeholder="Min 8 chars" required minlength="8" />
+        </div>
+        <button type="submit" class="auth-submit" id="btn-reset">Reset Password</button>
+        <div class="auth-alt">
+          <button type="button" class="auth-link" id="btn-back-login3">Back to Sign In</button>
+        </div>
+      </form>
+    </div>
+
+    <a class="auth-home-link" href="../index.html">&larr; Back to Study Hub</a>
+  </div>
+
+  <script type="module">
+    import { login, register, confirmEmail, forgotPassword, resetPassword, isLoggedIn } from '../auth.js';
+    import { syncOnLogin } from '../progress-sync.js';
+
+    // If already logged in, redirect home
+    if (isLoggedIn()) {
+      window.location.replace('../index.html');
+    }
+
+    const msgEl       = document.getElementById('auth-msg');
+    const tabs        = document.querySelectorAll('.auth-tab');
+    const formLogin   = document.getElementById('form-login');
+    const formReg     = document.getElementById('form-register');
+    const formConfirm = document.getElementById('form-confirm');
+    const formForgot  = document.getElementById('form-forgot');
+    const formReset   = document.getElementById('form-reset');
+    const tabBar      = document.getElementById('auth-tabs');
+    const allForms    = [formLogin, formReg, formConfirm, formForgot, formReset];
+
+    let pendingEmail = '';
+
+    function showForm(id) {
+      allForms.forEach(f => f.classList.remove('active'));
+      document.getElementById(id)?.classList.add('active');
+      hideMsg();
+      tabBar.style.display = (id === 'form-login' || id === 'form-register') ? 'flex' : 'none';
+    }
+
+    function showMsg(text, type = 'error') {
+      msgEl.textContent = text;
+      msgEl.className = `auth-msg show ${type}`;
+    }
+    function hideMsg() { msgEl.className = 'auth-msg'; }
+
+    function setLoading(btn, loading) {
+      if (loading) {
+        btn.disabled = true;
+        btn.dataset.origText = btn.textContent;
+        btn.innerHTML = '<span class="spinner"></span>Please wait...';
+      } else {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.origText || 'Submit';
+      }
+    }
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        showForm(tab.dataset.tab === 'login' ? 'form-login' : 'form-register');
+      });
+    });
+
+    // Login
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const pass  = document.getElementById('login-password').value;
+      const btn   = document.getElementById('btn-login');
+      if (!email || !pass) { showMsg('Please fill in all fields.'); return; }
+      setLoading(btn, true);
+      const result = await login(email, pass);
+      setLoading(btn, false);
+      if (result.success) {
+        syncOnLogin().catch(() => {});
+        showMsg('Signed in! Redirecting...', 'success');
+        setTimeout(() => {
+          const redirect = new URLSearchParams(location.search).get('redirect') || '../index.html';
+          window.location.href = redirect;
+        }, 800);
+      } else if (result.needsConfirmation) {
+        pendingEmail = email;
+        showForm('form-confirm');
+        showMsg(result.error);
+      } else {
+        showMsg(result.error);
+      }
+    });
+
+    // Register
+    formReg.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass  = document.getElementById('reg-password').value;
+      const pass2 = document.getElementById('reg-password2').value;
+      const btn   = document.getElementById('btn-register');
+      if (!email || !pass || !pass2) { showMsg('Please fill in all fields.'); return; }
+      if (pass !== pass2) { showMsg('Passwords do not match.'); return; }
+      if (pass.length < 8) { showMsg('Password must be at least 8 characters.'); return; }
+      setLoading(btn, true);
+      const result = await register(email, pass);
+      setLoading(btn, false);
+      if (result.success) {
+        pendingEmail = email;
+        showForm('form-confirm');
+        showMsg('Account created! Check your email for a verification code.', 'success');
+      } else {
+        showMsg(result.error);
+      }
+    });
+
+    // Confirm email — 6-digit code inputs
+    const codeInputs = document.querySelectorAll('#code-inputs input');
+    codeInputs.forEach((inp, i) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/[^0-9]/g, '');
+        if (inp.value && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) codeInputs[i - 1].focus();
+      });
+      inp.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '');
+        for (let j = 0; j < codeInputs.length && j < pasted.length; j++) {
+          codeInputs[j].value = pasted[j];
+        }
+        const nextEmpty = Array.from(codeInputs).findIndex(el => !el.value);
+        if (nextEmpty >= 0) codeInputs[nextEmpty].focus();
+        else codeInputs[codeInputs.length - 1].focus();
+      });
+    });
+
+    formConfirm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = Array.from(codeInputs).map(inp => inp.value).join('');
+      const btn  = document.getElementById('btn-confirm');
+      if (code.length !== 6) { showMsg('Please enter the full 6-digit code.'); return; }
+      setLoading(btn, true);
+      const result = await confirmEmail(pendingEmail, code);
+      setLoading(btn, false);
+      if (result.success) {
+        showForm('form-login');
+        showMsg('Email verified! You can now sign in.', 'success');
+        document.getElementById('login-email').value = pendingEmail;
+      } else {
+        showMsg(result.error);
+      }
+    });
+
+    // Forgot password
+    document.getElementById('btn-forgot').addEventListener('click', () => showForm('form-forgot'));
+
+    formForgot.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value.trim();
+      const btn   = document.getElementById('btn-send-code');
+      if (!email) { showMsg('Please enter your email.'); return; }
+      setLoading(btn, true);
+      const result = await forgotPassword(email);
+      setLoading(btn, false);
+      if (result.success) {
+        pendingEmail = email;
+        showForm('form-reset');
+        showMsg('Reset code sent! Check your email.', 'success');
+      } else {
+        showMsg(result.error);
+      }
+    });
+
+    // Reset password
+    formReset.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code    = document.getElementById('reset-code').value.trim();
+      const newPass = document.getElementById('reset-password').value;
+      const btn     = document.getElementById('btn-reset');
+      if (!code || !newPass) { showMsg('Please fill in all fields.'); return; }
+      if (newPass.length < 8) { showMsg('Password must be at least 8 characters.'); return; }
+      setLoading(btn, true);
+      const result = await resetPassword(pendingEmail, code, newPass);
+      setLoading(btn, false);
+      if (result.success) {
+        showForm('form-login');
+        showMsg('Password reset! You can now sign in.', 'success');
+        document.getElementById('login-email').value = pendingEmail;
+      } else {
+        showMsg(result.error);
+      }
+    });
+
+    // Back buttons
+    ['btn-back-login', 'btn-back-login2', 'btn-back-login3'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', () => {
+        showForm('form-login');
+        tabs.forEach(t => t.classList.remove('active'));
+        tabs[0].classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>(function(){if(localStorage.getItem('theme-v1')==='light')document.documentElement.classList.add('light-mode');})()</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- PWA -->
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sec+ Study" />
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+  <title>Security+ SY0-701 Flashcards — 1,500 Free Study Cards | it-learn.io</title>
+  <link rel="canonical" href="https://secplus.it-learn.io/pages/flashcards.html" />
+
+  <meta name="description" content="Study for your CompTIA Security+ SY0-701 exam with 1,500 free flashcards organized by domain and objective. Flip and review on any device." />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    /* ── Flashcard page layout ── */
+    .fc-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .fc-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .fc-header h1 { font-size: 1.6rem; margin: 0; }
+
+    /* ── Filters bar ── */
+    .fc-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      align-items: center;
+    }
+    .fc-filters select {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .7rem;
+      font-size: .85rem;
+      cursor: pointer;
+    }
+    .fc-filters select:focus { outline: 2px solid var(--accent); }
+
+    .btn-shuffle {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .9rem;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-shuffle:hover { background: var(--border); }
+    .btn-shuffle.active { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Stats bar ── */
+    .fc-stats {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .fc-counter { font-size: .9rem; color: var(--muted); min-width: 90px; }
+    .fc-progress-bar-wrap { flex: 1; min-width: 100px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .fc-progress-bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; width: 0%; }
+    .fc-badge {
+      display: flex; align-items: center; gap: .3rem;
+      font-size: .82rem; padding: .25rem .6rem;
+      border-radius: 99px; border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .fc-badge.known  { border-color: #2ecc71; color: #2ecc71; }
+    .fc-badge.review { border-color: #e67e22; color: #e67e22; }
+    .fc-badge.due    { border-color: #06b6d4; color: #06b6d4; }
+
+    /* ── Card scene / 3-D flip ── */
+    .fc-scene {
+      perspective: 1200px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .fc-card {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+      transform-style: preserve-3d;
+      transition: transform .5s cubic-bezier(.4,0,.2,1);
+      border-radius: 14px;
+    }
+    .fc-card.flipped { transform: rotateY(180deg); }
+
+    .fc-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Front */
+    .fc-front {
+      background: linear-gradient(135deg, #111a2e 0%, #152040 100%);
+      justify-content: space-between;
+    }
+    /* Back */
+    .fc-back {
+      background: linear-gradient(135deg, #0d1f14 0%, #0f2d1c 100%);
+      transform: rotateY(180deg);
+      justify-content: space-between;
+    }
+
+    .fc-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+    .fc-front .fc-label { color: #7aa2e3; }
+    .fc-back  .fc-label { color: #5ec98a; }
+
+    .fc-text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+    .fc-hint {
+      font-size: .78rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 1rem;
+      opacity: .7;
+    }
+
+    /* Objective tag on card */
+    .fc-obj-tag {
+      position: absolute;
+      top: .9rem;
+      right: 1rem;
+      font-size: .7rem;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      border-radius: 99px;
+      padding: .15rem .55rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Empty state */
+    .fc-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+    }
+
+    /* ── Action buttons ── */
+    .fc-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .fc-actions button {
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.1rem;
+      font-size: .9rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity .15s, transform .1s;
+    }
+    .fc-actions button:hover { opacity: .85; }
+    .fc-actions button:active { transform: scale(.97); }
+
+    .btn-prev, .btn-next {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-flip { background: var(--accent); color: #fff; }
+
+    /* ── SM-2 rating row ── */
+    .fc-rating-row {
+      display: flex; justify-content: center; align-items: stretch;
+      gap: .5rem; flex-wrap: wrap;
+    }
+    .btn-rating {
+      display: flex; flex-direction: column; align-items: center; gap: .15rem;
+      border: none; border-radius: 10px; padding: .55rem 1rem;
+      font-size: .88rem; font-weight: 700; cursor: pointer; min-width: 72px;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn-rating:hover  { opacity: .85; }
+    .btn-rating:active { transform: scale(.96); }
+    .fc-rating-interval { font-size: .68rem; font-weight: 400; opacity: .85; }
+    .btn-again { background: #e74c3c; color: #fff; }
+    .btn-hard  { background: #e67e22; color: #fff; }
+    .btn-good  { background: #2ecc71; color: #0a1f12; }
+    .btn-easy  { background: #06b6d4; color: #0a1f12; }
+
+    /* ── Keyboard hint ── */
+    .fc-kbd-hint {
+      text-align: center;
+      font-size: .78rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: center;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+    .fc-kbd-hint kbd {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .1rem .35rem;
+      font-size: .75rem;
+      font-family: monospace;
+    }
+    .fc-kbd-hint .sep { color: var(--border); }
+
+    /* ── Reset link ── */
+    .fc-reset-wrap { text-align: center; }
+    .fc-reset-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .8rem;
+      text-decoration: underline;
+      opacity: .7;
+    }
+    .fc-reset-btn:hover { opacity: 1; }
+
+    @media (max-width: 600px) {
+      .fc-text { font-size: 1rem; }
+      .fc-face  { padding: 1.5rem 1.25rem; }
+      .fc-card  { min-height: 240px; }
+    }
+  </style>
+  <!-- Open Graph / Social preview -->
+  <meta property="og:type"         content="website" />
+  <meta property="og:url"          content="https://secplus.it-learn.io/pages/flashcards.html" />
+  <meta property="og:title"        content="Flashcards — Security+ SY0-701 | it-learn.io" />
+  <meta property="og:description"  content="Free CompTIA Security+ SY0-701 study tool — 1,500 practice questions, 1,500 flashcards, 5 domains, and full progress tracking." />
+  <meta property="og:image"        content="https://secplus.it-learn.io/social-preview.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"    content="Security+ SY0-701 Study | it-learn.io" />
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Flashcards — Security+ SY0-701 | it-learn.io" />
+  <meta name="twitter:description" content="Free CompTIA Security+ SY0-701 study tool — 1,500 practice questions, 1,500 flashcards, 5 domains, and full progress tracking." />
+  <meta name="twitter:image"       content="https://secplus.it-learn.io/social-preview.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Preconnect hints -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://www.clarity.ms" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-G3BQF5RB65"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-G3BQF5RB65');
+  </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vvugnbm172");
+  </script>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Security+ SY0-701 Flashcards",
+  "url": "https://secplus.it-learn.io/pages/flashcards.html",
+  "description": "1,500 free CompTIA Security+ SY0-701 flashcards organized by domain and objective.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://secplus.it-learn.io/"
+  },
+  "educationalUse": "self-assessment",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "CompTIA Security+ exam candidates"
+  }
+}
+  </script>
+</head>
+<body>
+  <div class="layout">
+  <nav id="sidebar-nav" class="sidebar"></nav>
+
+  <main class="main-content">
+    <div class="fc-wrap">
+
+      <!-- Header -->
+      <div class="fc-header">
+        <h1>Flashcards</h1>
+        <div class="fc-filters">
+          <select id="fc-domain-select" aria-label="Filter by domain">
+            <option value="all">All Domains</option>
+          </select>
+          <select id="fc-obj-select" aria-label="Filter by objective">
+            <option value="all">All Objectives</option>
+          </select>
+          <select id="fc-mode-select" aria-label="Study mode">
+            <option value="all">All Cards</option>
+            <option value="due">Due Today</option>
+            <option value="review">Need Review</option>
+            <option value="unseen">Unseen Only</option>
+          </select>
+          <button class="btn-shuffle" id="fc-shuffle-btn" title="Shuffle cards">⇄ Shuffle</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="fc-stats">
+        <span class="fc-counter" id="fc-counter">— / —</span>
+        <div class="fc-progress-bar-wrap">
+          <div class="fc-progress-bar-fill" id="fc-progress-fill"></div>
+        </div>
+        <span class="fc-badge known"  id="fc-known-badge">✓ 0</span>
+        <span class="fc-badge review" id="fc-review-badge">↻ 0</span>
+        <span class="fc-badge due"    id="fc-due-badge">⏰ 0 due</span>
+      </div>
+
+      <!-- Card -->
+      <div class="fc-scene" id="fc-scene">
+        <div class="fc-card" id="fc-card">
+          <div class="fc-face fc-front">
+            <div class="fc-label">Question</div>
+            <div class="fc-text" id="fc-front-text">Loading…</div>
+            <div class="fc-hint">Click card · or press <kbd>Space</kbd> to reveal answer</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-label">Answer</div>
+            <div class="fc-text" id="fc-back-text"></div>
+            <div class="fc-hint">Rate yourself after flipping · <kbd>1</kbd> Again · <kbd>4</kbd> Good · <kbd>5</kbd> Easy</div>
+          </div>
+          <span class="fc-obj-tag" id="fc-obj-tag"></span>
+        </div>
+      </div>
+
+      <!-- Nav actions -->
+      <div class="fc-actions">
+        <button class="btn-prev" id="fc-prev-btn">← Prev</button>
+        <button class="btn-flip" id="fc-flip-btn">Flip</button>
+        <button class="btn-next" id="fc-next-btn">Next →</button>
+      </div>
+
+      <!-- SM-2 rating row — hidden until card is flipped -->
+      <div class="fc-rating-row" id="fc-rating-row" style="display:none">
+        <button class="btn-rating btn-again" id="fc-btn-again" data-quality="1">
+          Again<span class="fc-rating-interval" id="ri-again"> · 1d</span>
+        </button>
+        <button class="btn-rating btn-hard" id="fc-btn-hard" data-quality="3">
+          Hard<span class="fc-rating-interval" id="ri-hard"></span>
+        </button>
+        <button class="btn-rating btn-good" id="fc-btn-good" data-quality="4">
+          Good<span class="fc-rating-interval" id="ri-good"></span>
+        </button>
+        <button class="btn-rating btn-easy" id="fc-btn-easy" data-quality="5">
+          Easy<span class="fc-rating-interval" id="ri-easy"></span>
+        </button>
+      </div>
+
+      <!-- Keyboard hint -->
+      <div class="fc-kbd-hint">
+        <kbd>Space</kbd> flip
+        <span class="sep">·</span>
+        <kbd>←</kbd><kbd>→</kbd> navigate
+        <span class="sep">·</span>
+        <kbd>1</kbd> Again
+        <kbd>3</kbd> Hard
+        <kbd>4</kbd> Good
+        <kbd>5</kbd> Easy
+        <span class="sep">·</span>
+        <kbd>S</kbd> shuffle
+      </div>
+
+      <!-- Reset -->
+      <div class="fc-reset-wrap">
+        <button class="fc-reset-btn" id="fc-reset-btn">Reset progress</button>
+      </div>
+
+    </div>
+  </main>
+
+  </div><!-- /.layout -->
+  <script type="module" src="../app-flashcards.js"></script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>(function(){if(localStorage.getItem('theme-v1')==='light')document.documentElement.classList.add('light-mode');})()</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#00ff88" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Net+ Study" />
+  <link rel="icon" href="../favicon.ico" />
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+  <title>Admin Dashboard — Network+ N10-009 | it-learn.io</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .admin-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .admin-header h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      margin: 0;
+      color: var(--neon-green);
+      text-shadow: var(--glow-green);
+    }
+
+    .admin-refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: .82rem;
+      padding: .4rem .85rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color .15s, border-color .15s;
+    }
+    .admin-refresh-btn:hover { color: var(--neon-green); border-color: var(--neon-green); }
+
+    /* Summary cards */
+    .admin-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .admin-stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+    .admin-stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--neon-green);
+      text-shadow: var(--glow-green);
+      line-height: 1.1;
+    }
+    .admin-stat-lbl { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+    /* Users table */
+    .admin-table-wrap {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: .7rem .75rem;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .admin-table th:hover { color: var(--neon-green); }
+    .admin-table th.sorted.asc::after  { content: ' ▲'; margin-left: 4px; }
+    .admin-table th.sorted.desc::after { content: ' ▼'; margin-left: 4px; }
+
+    .admin-table td {
+      padding: .55rem .75rem;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      white-space: nowrap;
+    }
+    .admin-row { cursor: pointer; transition: background .15s; }
+    .admin-row:hover { background: rgba(0,255,136,.03); }
+
+    .admin-email {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .admin-active-badge {
+      background: rgba(0,255,136,.12);
+      color: var(--neon-green);
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+    .admin-inactive-badge { color: var(--muted); font-size: .78rem; }
+    .admin-dim { color: var(--muted); font-size: .75rem; }
+
+    td.pass { color: var(--neon-green); font-weight: 700; }
+    td.fail { color: #e74c3c; font-weight: 700; }
+
+    /* Detail row */
+    .admin-detail td { padding: .5rem 1rem; background: rgba(0,0,0,.15); }
+    .admin-quiz-table {
+      width: 100%;
+      max-width: 420px;
+      border-collapse: collapse;
+      font-size: .78rem;
+    }
+    .admin-quiz-table th {
+      text-align: left;
+      padding: .35rem .5rem;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .7rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+    }
+    .admin-quiz-table td {
+      padding: .3rem .5rem;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+    }
+    .admin-quiz-table td.pass { color: var(--neon-green); }
+    .admin-quiz-table td.fail { color: #e74c3c; }
+
+    /* Loading / error states */
+    .admin-loading { text-align: center; padding: 2rem; color: var(--muted); font-size: .9rem; }
+    .admin-error   { text-align: center; padding: 1rem; color: #e74c3c; font-size: .85rem; }
+
+    .admin-denied { text-align: center; padding: 4rem 2rem; }
+    .admin-denied h2 { margin: 0 0 .5rem; color: #e74c3c; }
+    .admin-denied p  { color: var(--muted); margin: 0 0 1rem; }
+    .admin-denied a  {
+      display: inline-block;
+      padding: .5rem 1.2rem;
+      background: linear-gradient(135deg, #00cc6a, #00ff88);
+      color: #07090f;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    /* Question Browser */
+    .qb-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+    }
+    .qb-section h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      margin: 0 0 1rem;
+      color: var(--neon-purple);
+    }
+
+    .qb-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .qb-filters select, .qb-filters input {
+      background: var(--panel2, #161922);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .65rem;
+      font-size: .82rem;
+      font-family: inherit;
+    }
+    .qb-filters select:focus, .qb-filters input:focus { outline: 2px solid var(--neon-green); }
+    .qb-filters input { width: 200px; }
+    .qb-count { font-size: .78rem; color: var(--muted); margin-left: auto; }
+
+    .qb-nav {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .qb-nav-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: .85rem;
+      padding: .35rem .7rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color .15s, border-color .15s;
+    }
+    .qb-nav-btn:hover { color: var(--neon-green); border-color: var(--neon-green); }
+    .qb-nav-btn:disabled { opacity: .3; cursor: default; }
+    .qb-pos { font-size: .82rem; color: var(--muted); min-width: 80px; text-align: center; }
+
+    .qb-card {
+      background: var(--panel2, #161922);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+    }
+    .qb-meta { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .qb-tag {
+      font-size: .7rem;
+      padding: .15rem .5rem;
+      border-radius: 99px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .qb-tag.type-match  { color: var(--neon-purple); border-color: rgba(180,79,255,.3); }
+    .qb-tag.type-order  { color: var(--neon-orange, #ff8c00); border-color: rgba(255,140,0,.3); }
+
+    .qb-question {
+      font-size: .95rem;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .qb-options { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
+    .qb-opt {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .5rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+    .qb-opt.correct { border-color: var(--neon-green); background: rgba(0,255,136,.06); }
+    .qb-opt-letter {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700;
+      color: var(--muted);
+    }
+    .qb-opt.correct .qb-opt-letter { background: var(--neon-green); color: #07090f; }
+
+    .qb-pairs { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
+    .qb-pair {
+      display: flex; align-items: stretch; gap: 0;
+      border: 1px solid rgba(180,79,255,.25);
+      border-radius: 8px; overflow: hidden; font-size: .85rem;
+    }
+    .qb-pair-left  { flex: 1; padding: .5rem .75rem; border-right: 1px solid rgba(180,79,255,.2); color: var(--text); line-height: 1.5; }
+    .qb-pair-right { width: 200px; flex-shrink: 0; padding: .5rem .75rem; color: var(--neon-purple); font-weight: 600; display: flex; align-items: center; line-height: 1.4; }
+
+    .qb-steps { display: flex; flex-direction: column; gap: .3rem; margin-bottom: 1rem; }
+    .qb-step {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .5rem .75rem;
+      border: 1px solid rgba(255,140,0,.2);
+      border-radius: 8px; font-size: .85rem; line-height: 1.5;
+    }
+    .qb-step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--neon-orange, #ff8c00); color: #000;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .qb-explanation {
+      padding: .75rem 1rem;
+      background: rgba(255,255,255,.03);
+      border-left: 3px solid var(--neon-green);
+      border-radius: 0 8px 8px 0;
+      font-size: .84rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .admin-summary { grid-template-columns: 1fr; }
+      .admin-stat-val { font-size: 1.5rem; }
+      .admin-email { max-width: 150px; }
+      .qb-pair-right { width: 140px; font-size: .78rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav id="sidebar-nav" class="sidebar"></nav>
+
+    <main class="main-content">
+      <div class="admin-wrap" id="admin-main">
+
+        <div class="admin-header">
+          <h1>⚙ Admin Dashboard</h1>
+          <button class="admin-refresh-btn" id="admin-refresh">↻ Refresh</button>
+        </div>
+
+        <!-- Summary stats -->
+        <div class="admin-summary">
+          <div class="admin-stat">
+            <span class="admin-stat-val" id="admin-total">—</span>
+            <span class="admin-stat-lbl">Total Subscribers</span>
+          </div>
+          <div class="admin-stat">
+            <span class="admin-stat-val" id="admin-active">—</span>
+            <span class="admin-stat-lbl">Active (7 days)</span>
+          </div>
+          <div class="admin-stat">
+            <span class="admin-stat-val" id="admin-avg">—</span>
+            <span class="admin-stat-lbl">Avg Best Score</span>
+          </div>
+        </div>
+
+        <div class="admin-loading" id="admin-loading">Loading subscriber data...</div>
+        <div class="admin-error" id="admin-error" style="display:none"></div>
+
+        <!-- Users table -->
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th data-sort="email">Email</th>
+                <th data-sort="joinedAt">Joined</th>
+                <th data-sort="lastActive">Last Active</th>
+                <th data-sort="streak">Streak / Sessions</th>
+                <th data-sort="cardsKnown">Cards Known</th>
+                <th data-sort="quizzesTaken">Quizzes</th>
+                <th data-sort="bestScore">Best Score</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Question Browser -->
+        <div class="qb-section" id="qb-section">
+          <h2>Question Browser</h2>
+
+          <div class="qb-filters">
+            <select id="qb-domain"><option value="">All Domains</option></select>
+            <select id="qb-type">
+              <option value="">All Types</option>
+              <option value="mc">Multiple Choice</option>
+              <option value="match">Matching</option>
+              <option value="order">Ordering</option>
+            </select>
+            <input type="text" id="qb-search" placeholder="Search questions…" />
+            <span class="qb-count" id="qb-count"></span>
+          </div>
+
+          <div class="qb-nav">
+            <button class="qb-nav-btn" id="qb-prev">◀ Prev</button>
+            <span class="qb-pos" id="qb-pos">—</span>
+            <button class="qb-nav-btn" id="qb-next">Next ▶</button>
+          </div>
+
+          <div id="qb-card-wrap"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../app-admin.js"></script>
+</body>
+</html>

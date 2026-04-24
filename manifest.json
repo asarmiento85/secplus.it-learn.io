@@ -1,0 +1,13 @@
+{
+  "name": "Security+ SY0-701 Study Hub",
+  "short_name": "Sec+ Study",
+  "description": "Free CompTIA Security+ SY0-701 study tool — practice questions, flashcards, and progress tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07090f",
+  "theme_color": "#0066cc",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
