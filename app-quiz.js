@@ -3,13 +3,13 @@ import { touchStreak, saveQuizSession }   from './progress.js';
 import { isLoggedIn, showLockOverlay }    from './auth.js';
 import { scheduleSync }                   from './progress-sync.js';
 
-// ── Domain weights for practice exam ──────────────────────────────────────
+// ── Domain weights for practice exam (SY0-701) ────────────────────────────
 const EXAM_WEIGHTS = [
-  { id: '1.0', name: 'Networking Concepts',    pct: 23, count: 21 },
-  { id: '2.0', name: 'Network Implementation', pct: 20, count: 18 },
-  { id: '3.0', name: 'Network Operations',     pct: 19, count: 17 },
-  { id: '4.0', name: 'Network Security',       pct: 14, count: 13 },
-  { id: '5.0', name: 'Network Troubleshooting',pct: 24, count: 21 },
+  { id: '1.0', name: 'General Security Concepts',              pct: 12, count: 11 },
+  { id: '2.0', name: 'Threats, Vulnerabilities & Mitigations', pct: 22, count: 20 },
+  { id: '3.0', name: 'Security Architecture',                  pct: 18, count: 16 },
+  { id: '4.0', name: 'Security Operations',                    pct: 28, count: 25 },
+  { id: '5.0', name: 'Security Program Management',            pct: 20, count: 18 },
 ];
 const EXAM_TOTAL     = 90;
 const EXAM_MINUTES   = 90;
