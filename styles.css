@@ -4,9 +4,9 @@
 /* ── Design tokens ─────────────────────────────────────── */
 :root{
   /* Backgrounds */
-  --bg:      #07090f;
-  --panel:   #0c1018;
-  --panel2:  #090d14;
+  --bg:      #0e1119;
+  --panel:   #131722;
+  --panel2:  #0f131c;
 
   /* Text */
   --text:    #e2ecf7;
@@ -85,8 +85,8 @@ body::before {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,153,255,0.013) 2px,
-    rgba(0,153,255,0.013) 4px
+    rgba(0,153,255,0.008) 2px,
+    rgba(0,153,255,0.008) 4px
   );
 }
 
@@ -221,75 +221,103 @@ body::before {
   margin-bottom: 18px;
 }
 .study-tool-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid transparent;
+  gap: 14px;
+  padding: 16px 18px 16px 22px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--panel);
   text-decoration: none;
-  color: #fff;
-  transition: opacity .15s, box-shadow .2s, border-color .2s;
+  color: var(--text);
+  box-shadow: 0 4px 14px var(--shadow);
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s, background .2s, transform .15s;
 }
-/* Flashcards: purple → neon green  (logo: text→ring) */
+/* Left-edge accent bar — the visual anchor */
+.study-tool-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: currentColor;
+  opacity: .9;
+  transition: width .2s, opacity .2s;
+}
+.study-tool-card:hover {
+  transform: translateY(-2px);
+}
+.study-tool-card:hover::before { width: 7px; opacity: 1; }
+
+/* Color = meaning (kept identical across all 4 sites once propagated):
+   Flashcards = review (purple) · Quiz = active practice (blue) ·
+   Progress = streak/achievement (orange) · Toolbox = utility (neutral) */
 .study-tool-card--flash {
-  background: linear-gradient(135deg, #8b30e0 0%, #0066cc 100%);
-  box-shadow: 0 4px 20px rgba(139,48,224,.4);
-  border-color: rgba(0,153,255,0.25);
+  color: var(--neon-purple);
+  background: linear-gradient(135deg, rgba(180,79,255,0.14) 0%, rgba(180,79,255,0.06) 100%);
+  border-color: rgba(180,79,255,0.40);
 }
 .study-tool-card--flash:hover {
-  box-shadow: 0 0 18px rgba(0,153,255,0.5), 0 0 40px rgba(139,48,224,0.3);
-  border-color: var(--neon-green);
-  opacity: 1;
+  border-color: var(--neon-purple);
+  box-shadow: var(--glow-purple);
 }
-/* Quiz: orange → purple  (logo: lock→text) */
+
 .study-tool-card--quiz {
-  background: linear-gradient(135deg, #d97706 0%, #8b30e0 100%);
-  box-shadow: 0 4px 20px rgba(217,119,6,.4);
-  border-color: rgba(255,140,0,0.25);
+  color: var(--neon-green);
+  background: linear-gradient(135deg, rgba(0,153,255,0.14) 0%, rgba(0,153,255,0.06) 100%);
+  border-color: rgba(0,153,255,0.40);
 }
 .study-tool-card--quiz:hover {
-  box-shadow: 0 0 18px rgba(255,140,0,0.5), 0 0 40px rgba(139,48,224,0.3);
-  border-color: var(--neon-orange);
-  opacity: 1;
+  border-color: var(--neon-green);
+  box-shadow: var(--glow-green);
 }
-/* Dashboard: neon green → orange  (logo: ring→lock) */
+
 .study-tool-card--dash {
-  background: linear-gradient(135deg, #00995a 0%, #d97706 100%);
-  box-shadow: 0 4px 20px rgba(0,153,90,.4);
-  border-color: rgba(0,153,255,0.25);
+  color: var(--neon-orange);
+  background: linear-gradient(135deg, rgba(255,140,0,0.14) 0%, rgba(255,140,0,0.06) 100%);
+  border-color: rgba(255,140,0,0.40);
 }
 .study-tool-card--dash:hover {
-  box-shadow: 0 0 18px rgba(0,153,255,0.4), 0 0 40px rgba(255,140,0,0.3);
   border-color: var(--neon-orange);
-  opacity: 1;
+  box-shadow: var(--glow-orange);
 }
-/* Toolbox: purple → cyan */
+
 .study-tool-card--tools {
-  background: linear-gradient(135deg, #7c3aed 0%, #0891b2 100%);
-  box-shadow: 0 4px 20px rgba(124,58,237,.4);
-  border-color: rgba(180,79,255,0.25);
+  color: var(--neon-purple);
+  background: linear-gradient(135deg, rgba(180,79,255,0.10) 0%, rgba(0,153,255,0.06) 100%);
+  border-color: rgba(180,79,255,0.30);
+  opacity: .92;
 }
 .study-tool-card--tools:hover {
-  box-shadow: 0 0 18px rgba(180,79,255,.5), 0 0 40px rgba(6,182,212,.3);
   border-color: var(--neon-purple);
+  box-shadow: var(--glow-purple);
   opacity: 1;
 }
+
 .stc-icon {
-  font-size: 1.6rem;
+  font-size: 2rem;
   line-height: 1;
   flex-shrink: 0;
+  color: currentColor;
+  filter: drop-shadow(0 0 6px currentColor);
+  transition: transform .2s;
 }
+.study-tool-card:hover .stc-icon { transform: scale(1.08); }
+
 .stc-title {
   font-family: 'Orbitron', monospace;
   font-weight: 700;
-  font-size: .82rem;
+  font-size: .95rem;
   letter-spacing: .04em;
+  color: currentColor;
+  text-shadow: 0 0 8px currentColor;
 }
 .stc-sub {
-  font-size: .75rem;
-  opacity: .82;
-  margin-top: 2px;
+  font-size: .76rem;
+  color: var(--muted);
+  margin-top: 3px;
+  font-weight: 500;
 }
 
 /* ── Note / info panels ─────────────────────────────── */
@@ -486,55 +514,60 @@ code{
 .tools-link {
   display: block;
   padding: 9px 12px;
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
   border-radius: 8px;
   text-decoration: none;
-  color: #fff;
   font-family: 'Orbitron', monospace;
   font-weight: 700;
   font-size: .72rem;
   text-align: center;
   letter-spacing: .06em;
-  transition: opacity .15s, box-shadow .2s, border-color .2s;
+  transition: border-color .2s, box-shadow .2s, background .2s, color .2s;
 }
 .flashcards-link {
-  background: linear-gradient(135deg, #7a20d0 0%, #0066cc 100%);
-  box-shadow: 0 3px 12px rgba(122,32,208,0.4);
-  border-color: rgba(0,153,255,0.2);
+  background: linear-gradient(135deg, rgba(180,79,255,0.18) 0%, rgba(180,79,255,0.08) 100%);
+  border-color: rgba(180,79,255,0.40);
+  color: var(--neon-purple);
+  text-shadow: 0 0 6px rgba(180,79,255,0.5);
 }
 .flashcards-link:hover {
-  box-shadow: var(--glow-green);
-  border-color: var(--neon-green);
-  opacity: 1;
+  background: linear-gradient(135deg, rgba(180,79,255,0.28) 0%, rgba(180,79,255,0.14) 100%);
+  border-color: var(--neon-purple);
+  box-shadow: var(--glow-purple);
 }
 .quiz-link {
-  background: linear-gradient(135deg, #c96800 0%, #7a20d0 100%);
-  box-shadow: 0 3px 12px rgba(201,104,0,0.4);
-  border-color: rgba(255,140,0,0.2);
+  background: linear-gradient(135deg, rgba(0,153,255,0.18) 0%, rgba(0,153,255,0.08) 100%);
+  border-color: rgba(0,153,255,0.40);
+  color: var(--neon-green);
+  text-shadow: 0 0 6px rgba(0,153,255,0.5);
 }
 .quiz-link:hover {
-  box-shadow: var(--glow-orange);
-  border-color: var(--neon-orange);
-  opacity: 1;
+  background: linear-gradient(135deg, rgba(0,153,255,0.28) 0%, rgba(0,153,255,0.14) 100%);
+  border-color: var(--neon-green);
+  box-shadow: var(--glow-green);
 }
 .dashboard-link {
-  background: linear-gradient(135deg, #007a44 0%, #c96800 100%);
-  box-shadow: 0 3px 12px rgba(0,122,68,0.4);
-  border-color: rgba(0,153,255,0.2);
+  background: linear-gradient(135deg, rgba(255,140,0,0.18) 0%, rgba(255,140,0,0.08) 100%);
+  border-color: rgba(255,140,0,0.40);
+  color: var(--neon-orange);
+  text-shadow: 0 0 6px rgba(255,140,0,0.5);
 }
 .dashboard-link:hover {
-  box-shadow: var(--glow-green);
-  border-color: var(--neon-green);
-  opacity: 1;
+  background: linear-gradient(135deg, rgba(255,140,0,0.28) 0%, rgba(255,140,0,0.14) 100%);
+  border-color: var(--neon-orange);
+  box-shadow: var(--glow-orange);
 }
 .tools-link {
-  background: linear-gradient(135deg, #6520b8 0%, #0891b2 100%);
-  box-shadow: 0 3px 12px rgba(101,32,184,0.4);
-  border-color: rgba(180,79,255,0.2);
+  background: linear-gradient(135deg, rgba(180,79,255,0.10) 0%, rgba(0,153,255,0.06) 100%);
+  border-color: rgba(180,79,255,0.30);
+  color: var(--neon-purple);
+  text-shadow: 0 0 6px rgba(180,79,255,0.4);
+  opacity: .9;
 }
 .tools-link:hover {
-  box-shadow: var(--glow-purple);
+  background: linear-gradient(135deg, rgba(180,79,255,0.20) 0%, rgba(0,153,255,0.10) 100%);
   border-color: var(--neon-purple);
+  box-shadow: var(--glow-purple);
   opacity: 1;
 }
 
