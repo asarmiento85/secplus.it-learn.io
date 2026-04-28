@@ -557,16 +557,24 @@ code{
   border-color: var(--neon-orange);
   box-shadow: var(--glow-orange);
 }
+/* Toolbox = utility / reference, not a primary study action.
+   Demoted to a neutral "console" entry so it doesn't compete visually
+   with the three primary study tiles above it. Border + text both use
+   currentColor so the dashed outline stays visible in both light & dark. */
 .tools-link {
-  background: linear-gradient(135deg, rgba(180,79,255,0.10) 0%, rgba(0,153,255,0.06) 100%);
-  border-color: rgba(180,79,255,0.30);
-  color: var(--neon-purple);
-  text-shadow: 0 0 6px rgba(180,79,255,0.4);
-  opacity: .9;
+  background: transparent;
+  border: 1px dashed currentColor;
+  color: var(--muted);
+  letter-spacing: .12em;
+  text-shadow: none;
+  opacity: .7;
 }
 .tools-link:hover {
-  background: linear-gradient(135deg, rgba(180,79,255,0.20) 0%, rgba(0,153,255,0.10) 100%);
+  background: rgba(180,79,255,0.08);
+  border-style: solid;
   border-color: var(--neon-purple);
+  color: var(--neon-purple);
+  text-shadow: 0 0 6px rgba(180,79,255,0.4);
   box-shadow: var(--glow-purple);
   opacity: 1;
 }
