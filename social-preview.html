@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>social-preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#000;display:flex;align-items:flex-start;justify-content:center;}
+
+    #card{
+      width:1200px;height:630px;
+      background:#0e1119;
+      position:relative;overflow:hidden;
+      display:flex;align-items:center;
+      font-family:'Rajdhani',sans-serif;
+    }
+
+    /* scan lines */
+    #card::before{
+      content:'';position:absolute;inset:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+        rgba(0,153,255,0.012) 3px,rgba(0,153,255,0.012) 4px);
+      pointer-events:none;z-index:0;
+    }
+
+    .orb-tl{
+      position:absolute;top:-160px;left:-60px;
+      width:540px;height:540px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,153,255,0.10) 0%,transparent 65%);
+    }
+    .orb-br{
+      position:absolute;bottom:-180px;right:-60px;
+      width:500px;height:500px;border-radius:50%;
+      background:radial-gradient(circle,rgba(180,79,255,0.09) 0%,transparent 65%);
+    }
+
+    /* ── LEFT: big shield icon ── */
+    .left{
+      position:relative;z-index:1;
+      width:400px;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+    .shield-wrap{
+      width:280px;height:280px;
+      filter:drop-shadow(0 0 32px rgba(0,153,255,0.35)) drop-shadow(0 0 64px rgba(0,153,255,0.15));
+    }
+
+    /* ── DIVIDER ── */
+    .divider{
+      position:relative;z-index:1;
+      width:1px;height:420px;align-self:center;
+      background:linear-gradient(180deg,transparent,rgba(0,153,255,0.28) 30%,rgba(180,79,255,0.28) 70%,transparent);
+    }
+
+    /* ── RIGHT ── */
+    .right{
+      position:relative;z-index:1;
+      flex:1;padding:0 72px 0 52px;
+      display:flex;flex-direction:column;justify-content:center;
+    }
+
+    .exam-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 16px;border-radius:999px;
+      background:rgba(0,153,255,0.10);
+      border:1px solid rgba(0,153,255,0.30);
+      font-size:13px;font-weight:600;letter-spacing:0.10em;
+      color:#0099ff;text-transform:uppercase;
+      margin-bottom:22px;width:fit-content;
+    }
+    .badge-dot{
+      width:7px;height:7px;border-radius:50%;
+      background:#0099ff;
+      box-shadow:0 0 6px rgba(0,153,255,0.9);
+    }
+
+    .title{
+      font-family:'Orbitron',sans-serif;
+      font-size:62px;font-weight:900;
+      color:#e2ecf7;line-height:1;
+      margin-bottom:8px;
+    }
+    .title span{
+      background:linear-gradient(90deg,#0099ff,#b44fff);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .subtitle{
+      font-family:'Orbitron',sans-serif;
+      font-size:22px;font-weight:400;
+      color:#3a5a6a;letter-spacing:0.08em;
+      margin-bottom:36px;
+    }
+
+    .stats{display:flex;flex-direction:column;gap:12px;margin-bottom:36px;}
+    .stat-row{
+      display:flex;align-items:center;gap:14px;
+    }
+    .stat-num{
+      font-family:'Orbitron',sans-serif;
+      font-size:26px;font-weight:700;
+      min-width:100px;
+    }
+    .stat-num.blue{color:#0099ff;}
+    .stat-num.purple{color:#b44fff;}
+    .stat-num.orange{color:#ff8c00;}
+    .stat-label{
+      font-size:17px;font-weight:500;color:#7a9ab0;
+    }
+    .stat-divider{
+      flex:1;height:1px;
+      background:rgba(255,255,255,0.05);
+    }
+
+    .wordmark{
+      display:flex;align-items:center;gap:10px;
+      font-family:'Orbitron',sans-serif;
+      font-size:15px;font-weight:700;
+      color:rgba(226,236,247,0.35);letter-spacing:0.04em;
+    }
+    .wordmark-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:#0099ff;opacity:0.5;
+    }
+  </style>
+</head>
+<body>
+<div id="card">
+  <div class="orb-tl"></div>
+  <div class="orb-br"></div>
+
+  <!-- Shield Icon -->
+  <div class="left">
+    <svg class="shield-wrap" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hex" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0099ff"/>
+          <stop offset="100%" stop-color="#b44fff"/>
+        </linearGradient>
+        <linearGradient id="lock" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#33b4ff"/>
+          <stop offset="100%" stop-color="#b44fff"/>
+        </linearGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <polygon points="256,30 466,150 466,362 256,482 46,362 46,150"
+               fill="#0e1119" stroke="url(#hex)" stroke-width="14" filter="url(#glow)"/>
+      <polygon points="256,80 416,170 416,342 256,432 96,342 96,170"
+               fill="none" stroke="rgba(0,153,255,0.30)" stroke-width="2"/>
+      <path d="M 210 245 L 210 195 C 210 152 302 152 302 195 L 302 245"
+            fill="none" stroke="url(#lock)" stroke-width="22" stroke-linecap="round" filter="url(#glow)"/>
+      <rect x="180" y="240" width="152" height="120" rx="14"
+            fill="url(#lock)" filter="url(#glow)"/>
+      <circle cx="256" cy="290" r="13" fill="#0e1119"/>
+      <rect x="250" y="298" width="12" height="34" rx="3" fill="#0e1119"/>
+      <g transform="translate(388,98)" filter="url(#glow)">
+        <rect x="-26" y="-6" width="52" height="12" rx="2" fill="#ff8c00"/>
+        <rect x="-6" y="-26" width="12" height="52" rx="2" fill="#ff8c00"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Right Content -->
+  <div class="right">
+    <div class="exam-badge">
+      <div class="badge-dot"></div>
+      CompTIA SY0-701
+    </div>
+
+    <div class="title"><span>Security+</span></div>
+    <div class="subtitle">Exam Prep</div>
+
+    <div class="stats">
+      <div class="stat-row">
+        <span class="stat-num blue">1,310</span>
+        <span class="stat-label">Practice Questions</span>
+        <div class="stat-divider"></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-num purple">1,310</span>
+        <span class="stat-label">Flashcards</span>
+        <div class="stat-divider"></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-num orange">28</span>
+        <span class="stat-label">Exam Objectives</span>
+        <div class="stat-divider"></div>
+      </div>
+    </div>
+
+    <div class="wordmark">
+      <div class="wordmark-dot"></div>
+      it-learn.io
+    </div>
+  </div>
+</div>
+</body>
+</html>
